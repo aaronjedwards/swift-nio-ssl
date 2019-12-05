@@ -422,12 +422,17 @@ public class NIOSSLHandler : ChannelInboundHandler, ChannelOutboundHandler, Remo
                 // If we have a promise, we need to enforce ordering so we issue a zero-length write that
                 // the event loop will have to handle.
                 let buffer = context.channel.allocator.buffer(capacity: 0)
-                context.writeAndFlush(wrapInboundOut(buffer), promise: promise)
+                finishWriteDataToNetwork(context: context, data: wrapInboundOut(buffer), promise: promise)
             }
             return
         }
-
-        context.writeAndFlush(self.wrapInboundOut(dataToWrite), promise: promise)
+        
+        finishWriteDataToNetwork(context: context, data: self.wrapInboundOut(dataToWrite), promise: promise)
+    }
+    
+    private func finishWriteDataToNetwork(context: ChannelHandlerContext, data: NIOAny, promise: EventLoopPromise<Void>?) {
+        context.writeAndFlush(data, promise: promise)
+        context.triggerUserOutboundEvent(TLSUserEvent.messageSent, promise: promise)
     }
 
     /// Close the underlying channel.

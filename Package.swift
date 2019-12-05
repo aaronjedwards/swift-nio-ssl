@@ -35,7 +35,7 @@ let package = Package(
 MANGLE_END */
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio.git", from: "2.9.0"),
+        .package(url: "https://github.com/aaronjedwards/swift-nio.git", .branch("tls-message-sent-event")),
     ],
     targets: [
         .target(name: "CNIOBoringSSL"),
